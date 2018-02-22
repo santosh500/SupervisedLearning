@@ -10,8 +10,8 @@ disp(B);
 V = vertcat(A,B);
 %Q=outerjoin(A,B);
 
-%disp(V);
-%str = strings(2,3);
+disp(V);
+str = strings(2,3);
 
 
 names = {};
@@ -24,7 +24,8 @@ end
 y = reshape(names,1200,1);
 
 disp(names);
-X2 = V(:,2:54);
+X2= V(:,2:54);
+tabulate(y)
 
 
 Mdl = fitcnb(X2,y,...
@@ -43,11 +44,18 @@ P1(:,1) = [];
 
 label=predict(Mdl,P);
 label2=predict(Mdl,P1);
-u = 0;
-for i=1:199
-    if isequal(label(i,1),'real')
-        u=u+1;
-    end
-    disp(label(i,1))
+D = {};
+for i=1:200
+    D{end+1} = 'fake';
 end
-disp(u)
+K2 = reshape(D,200,1);
+
+D2 = {};
+for i=1:1000
+    D2{end+1} = 'real';
+end
+K3 = reshape(D2,1000,1);
+L = loss(Mdl,P,K2);
+L2 = loss(Mdl,P1,K3);
+rsLoss1 = resubLoss(Mdl);
+
