@@ -1,0 +1,86 @@
+LiveTrain = importdata('featureMat_liv_train_bioLBP.mat');
+LiveTest = importdata('featureMat_liv_test_bioLBP.mat');
+LatexTrain= importdata('featureMat_Latex_train_bioLBP.mat');
+LatexTest= importdata('featureMat_Latex_test_bioLBP.mat');
+GelatineTrain = importdata('featureMat_Gelatine_train_bioLBP.mat');
+GelatineTest = importdata('featureMat_Gelatine_test_bioLBP.mat');
+
+%Part 1
+LiveLatexTrainData = vertcat(LiveTrain,LatexTrain);
+
+labelsLiveLatexHor = {};
+for i=1:1000
+    labelsLiveLatexHor{end+1} = 'real';
+end
+for i=1:200
+    labelsLiveLatexHor{end+1} = 'fake';
+end
+labelsLiveLatex = reshape(labelsLiveLatexHor,1200,1);
+Part2Model = fitcnb(LiveLatexTrainData,labelsLiveLatex,...
+    'ClassNames',{'fake','real'});
+
+%Part 2
+LatexTestPredictPart2=predict(Part2Model, LatexTest);
+LiveTestPredictPart2=predict(Part2Model,LiveTest);
+
+%Part 3
+LatexTestLabels = {};
+for i=1:200
+    LatexTestLabels{end+1} = 'fake';
+end
+LatexTestLabelsAdj = reshape(LatexTestLabels,200,1);
+
+LiveTestLabels = {};
+for i=1:1000
+    LiveTestLabels{end+1} = 'real';
+end
+LiveTestLabelsAdj = reshape(LiveTestLabels,1000,1);
+lossLatexPart3 = loss(Part2Model,LatexTest,LatexTestLabelsAdj);
+lossLivePart3 = loss(Part2Model,LiveTrain,LiveTestLabelsAdj);
+resubLatexLivePart3 = resubLoss(Part2Model);
+
+%Part 4
+LiveLatexGelatineTrainData = vertcat(LiveTrain,LatexTrain,GelatineTrain);
+
+LiveLatexGelatineLabels = {};
+for i=1:1000
+    LiveLatexGelatineLabels{end+1} = 'real';
+end
+for i=1:400
+    LiveLatexGelatineLabels{end+1} = 'fake';
+end
+trainLabels = reshape(LiveLatexGelatineLabels,1400,1);
+
+Part4Model = fitcnb(LiveLatexGelatineTrainData,trainLabels,...
+    'ClassNames',{'real','fake'});
+
+
+LivePredictPart4=predict(Part4Model,LiveTest);
+GelatinePredictPart4=predict(Part4Model,GelatineTest);
+GelatineLabels = {};
+for i=1:200
+    GelatineLabels{end+1} = 'fake';
+end
+GelatineLabelsAdj = reshape(GelatineLabels,200,1);
+
+LiveLabels= {};
+for i=1:1000
+    LiveLabels{end+1} = 'real';
+end
+LiveLabelsAdj = reshape(LiveLabels,1000,1);
+
+%#5
+lossLivePart5 = loss(Part4Model,LiveTest,LiveLabelsAdj);
+lossGelatinePart5= loss(Part4Model,GelatineTest,GelatineLabelsAdj);
+lossLatexPart5= loss(Part4Model,LatexTest,LatexTestLabels);
+resubGelatineLivePart5 = resubLoss(Part4Model);
+
+%#6
+prior = [0.6 0.4];
+Part6Model = fitcnb(LiveLatexTrainData,labelsLiveLatex,'ClassNames',{'real','fake'},'Prior',prior)
+labelPriorLive=predict(Part6Model,LiveTest);
+labelPriorLatex=predict(Part6Model,LatexTest);
+lossLatexPriorPart6 = loss(Part6Model,LatexTest,LatexTestLabelsAdj);
+lossLivePriorPart6 = loss(Part6Model,LiveTest,LiveTestLabelsAdj);
+resubLossPriorPart6 = resubLoss(Part6Model);
+
