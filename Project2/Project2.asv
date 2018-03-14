@@ -1,0 +1,15 @@
+A = imread('name1.pgm')
+t = dir('att_faces');
+fields = fieldnames(t);
+ls=[];
+for i = 1:numel(fields)
+  t.(fields{2});
+  
+end
+b = dir('att_faces');
+b(1)
+names =  fieldnames(b(1));
+for i = 1:numel(names)
+ value{i} = getfield(b(1),names{i})
+end
+%access a struct 
