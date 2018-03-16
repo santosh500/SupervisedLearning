@@ -1,16 +1,21 @@
 
-%This code to apply PCA (Principal Component Analysis) 
 
-% Remember that each column of the data matrix(input matrix) represent one image or pattern  
-% Note: the data here represent two classes
-% Class 1: data(:,1:4)
-% Class 2: data(:,5:8)
+vertArray = [];
+for i = 1:25
+    g = [];
+    for j = 1:10
+        
+        %y = dir(strcat('att_faces\s',i,'.pgm'));
+        r = strcat('att_faces\s',int2str(i));
+        y = strcat(r,'\',int2str(j),'.pgm');
+        v = imread(y);
+        r = reshape(v', [], 1);
+        g = horzcat(g,r);
+    end
+    vertArray = horzcat(vertArray,g);
+end
 
-data = [1     1     2     0     7     6     7     8
-        3     2     3     3     4     5     5     4];
-
-%data = double(imread('name1.pgm'));   
- 
+data = double(vertArray);
 [r,c] = size(data);
 %data = int16(1:r);   
 % Compute the mean of the data matrix "The mean of each row"
@@ -19,7 +24,7 @@ m = mean(data')';
 k2 = repmat(m,1,c);
 d=data-repmat(m,1,c);
 
-maind = d';
+
 % Compute the covariance matrix (co)
 co=d*d';
 
@@ -55,17 +60,7 @@ x=vec'*d;
 
 
 
-% If you have test data do the following
-t=[1;1]  % this test data is close to the first class
-%Subtract the mean from the test data
-t=t-m;
-%Project the testing data on the space of the training data
-t=vec'*t;
 
-% Then if you want to know what is the class of this test data?  just use
-% any classifier (In our case we used minimum distance classifier)
-alldata=t';
-alldata(2:size(x,2)+1,:)=x'
-dist=pdist(alldata);
-[a,b]=min(dist(:,1:size(x,2)))
-% So, b determine the closest observation to test data;
+%A = imread('name1.pgm');
+%AColumnVector = reshape(A', [], 1);
+%GColumnVector = reshape(g', [], 1);
