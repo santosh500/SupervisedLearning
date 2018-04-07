@@ -1,112 +1,100 @@
+clc
+clear all
+close all
 
-
-trainPhotos = [];
-testPhotos = [];
-for i = 1:40
+PCAphotos = [];
+for i = 1:25
     g = [];
-    for j = 1:5
-        
+    for j = 1:10
         %y = dir(strcat('att_faces\s',i,'.pgm'));
         r = strcat('att_faces\s',int2str(i));
         y = strcat(r,'\',int2str(j),'.pgm');
         v = imread(y);
-        r = reshape(v', [], 1);
+        r = v(:);
         g = horzcat(g,r);
     end
-    trainPhotos = horzcat(trainPhotos,g);
+    PCAphotos = horzcat(PCAphotos,g);
 end
 
-for i = 1:40
-    g = [];
-    for j = 6:10
-        
-        %y = dir(strcat('att_faces\s',i,'.pgm'));
-        r = strcat('att_faces\s',int2str(i));
-        y = strcat(r,'\',int2str(j),'.pgm');
-        v = imread(y);
-        r = reshape(v', [], 1);
-        g = horzcat(g,r);
-    end
-    testPhotos = horzcat(testPhotos,g);
-end
+PCAData = double(PCAphotos);
 
+[r,c] = size(PCAData);
 
-trainData = double(trainPhotos);
-testData = double(testPhotos);
-[r,c] = size(trainData);
-%data = int16(1:r);   
-% Compute the mean of the data matrix "The mean of each row"
-m = mean(trainData')';
-% Subtract the mean from each image [Centering the data]
-k2 = repmat(m,1,c);
-d=trainData-repmat(m,1,c);
+m = mean(PCAData')';
 
+d=PCAData-repmat(m,1,c);
 
-% Compute the covariance matrix (co)
 co=d*d';
 
-% Compute the eigen values and eigen vectors of the covariance matrix
 [eigvector,eigvl]=eig(co);
 
-
-% Sort the eigen vectors according to the eigen values
 eigvalue = diag(eigvl);
 [junk, index] = sort(eigvalue,'descend');
 eigvalue = eigvalue(index);
 eigvector = eigvector(:, index);
-
-% Compute the number of eigen values that greater than zero (you can select any threshold)
 count1=0;
 for i=1:size(eigvalue,1)
     if(eigvalue(i)>0)
         count1=count1+1;
     end
 end
-
-% We can use all the eigen vectors but this method will increase the
-% computation time and complixity
-%vec=eigvector(:,:);
-
-% And also we can use the eigen vectors that the corresponding eigen values is greater than zero(Threshold) and this method will decrease the
-% computation time and complixity
-
 vec=eigvector(:,1:count1);
 
-% Compute the feature matrix (the space that will use it to project the testing image on it)
-train_x=vec'*trainData;
 
-compare1 = [];
-compare2 = [];
+trainphotos = [];
 for i = 26:40
-    g1 = [];
-    for j = 1:10
+    g = [];
+    for j = 1:5
         %y = dir(strcat('att_faces\s',i,'.pgm'));
         r = strcat('att_faces\s',int2str(i));
-        y1 = strcat(r,'\',int2str(j),'.pgm');
-        v = imread(y1);
-        r = reshape(v', [], 1);
-        g1 = horzcat(g1,r);
+        y = strcat(r,'\',int2str(j),'.pgm');
+        v = imread(y);
+        r = v(:);
+        g = horzcat(g,r);
     end
-    compare1 = horzcat(compare1,g1);
+    trainphotos = horzcat(trainphotos,g);
 end
-c1=double(compare1);
-test_main=c1-repmat(mean(c1,2),1,150);
-test_x = vec'*test_main;
-D=pdist2(train_x',test_x','Euclidean');
-%A = imread('name1.pgm');
-%AColumnVector = reshape(A', [], 1);
-%GColumnVector = reshape(g', [], 1);
-labels=zeros(250,150);
-for i=1:250
- for j=1:150
- if(fix((i-1)/10)==fix((j-1)/10))
+
+trainData = double(trainphotos);
+
+trainData=(trainData-m);
+train_x = vec'*trainData;
+
+testphotos = [];
+for i = 26:40
+    g = [];
+    for j = 6:10
+        %y = dir(strcat('att_faces\s',i,'.pgm'));
+        r = strcat('att_faces\s',int2str(i));
+        y = strcat(r,'\',int2str(j),'.pgm');
+        v = imread(y);
+        r = v(:);
+        g = horzcat(g,r);
+    end
+    testphotos = horzcat(testphotos,g);
+end
+testData = double(testphotos);
+
+testData=(testData-m);
+test_x = vec'*testData;
+D=pdist2(test_x',train_x','Euclidean');
+labels=zeros(75,75);
+for i=1:75
+ for j=1:75
+ if(fix((i-1)/5)==fix((j-1)/5))
  labels(i,j)=0;
  else
  labels(i,j)=1;
  end
  end
 end
-ezroc3(D, labels,2,'',1);
+
+
+ezroc3(D,labels,2,'',1);
+
+
+
+
 
 
 
@@ -191,6 +179,6 @@ if (nargin==1 || nargin==2 || nargin==3 || nargin == 4 || nargin == 5)
         %else it must be 0, i.e. no plot
     end
 end
-
-
 end
+
+
