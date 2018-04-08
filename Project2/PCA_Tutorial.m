@@ -9,17 +9,13 @@
 data = [1     1     2     0     7     6     7     8
         3     2     3     3     4     5     5     4];
 
-%data = double(imread('name1.pgm'));   
- 
 [r,c] = size(data);
-%data = int16(1:r);   
 % Compute the mean of the data matrix "The mean of each row"
-m = mean(data,2);
+m = mean(data')';
 % Subtract the mean from each image [Centering the data]
-k2 = repmat(m,1,c);
 d=data-repmat(m,1,c);
 
-maind = d';
+
 % Compute the covariance matrix (co)
 co=d*d';
 
@@ -61,9 +57,12 @@ t=[1;1]  % this test data is close to the first class
 t=t-m;
 %Project the testing data on the space of the training data
 t=vec'*t;
+
 % Then if you want to know what is the class of this test data?  just use
 % any classifier (In our case we used minimum distance classifier)
 alldata=t';
 alldata(2:size(x,2)+1,:)=x';
 dist=pdist(alldata);
-
+o = dist(:,1:size(x,2));
+[a,b]=min(dist(:,1:size(x,2)))
+% So, b determine the closest observation to test data;

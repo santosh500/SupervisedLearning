@@ -3,7 +3,7 @@ compare1 = [];
 compare2 = [];
 for i = 26:40
     g1 = [];
-    for j = 1:10
+    for j = 1:5
         %y = dir(strcat('att_faces\s',i,'.pgm'));
         r = strcat('att_faces\s',int2str(i));
         y1 = strcat(r,'\',int2str(j),'.pgm');
@@ -25,4 +25,4 @@ for i = 26:40
     end
     compare2 = horzcat(compare2,g2);
 end
-q= pdist2(compare1,compare2,'Euclidean');
+D=pdist2(compare1',compare2','Euclidean');
