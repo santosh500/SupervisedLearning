@@ -129,20 +129,20 @@ end
 
 
 
-testNumber = 1;
+
 %Obtain the test data for images 6-10 for all classes
 testArray = cell(singleFeatures,1);
 for i = 1:200
     testPhotos = [];
     for j = 1:4974
         %y = dir(strcat('att_faces\s',i,'.pgm'));
-        z = test(j,i);
+        z = train(j,i);
         testPhotos = vertcat(testPhotos,z);
     end
-    g = horzcat(g,testPhotos);
+    g = horzcat(g,trainPhotos);
     if(mod(i,5)==0)
-        testArray{testNumber} = double(g);
-        testNumber = testNumber + 1;
+        cellArray{totalNumber} = double(g);
+        totalNumber = totalNumber + 1;
         g=[];
     end
 end
@@ -160,27 +160,7 @@ end
 distance=pdist2(testVec',trainVec','Euclidean');
 
 
-%Create the label matrix
-zeroMatrix = zeros(5);
-oneMatrix = ones(5);
-labelsMain = []
-labelCount = 1;
-generalMat = [];
-for i=1:40 
-    generalMat = [];
-    for j=1:40
-        if(labelCount==j)
-            generalMat = horzcat(generalMat,zeroMatrix);
-        else
-            generalMat = horzcat(generalMat,oneMatrix);
-        end
-    end
-    labelsMain = vertcat(labelsMain,generalMat);
-    labelCount = labelCount + 1;
-end
 
-%Utilize the EZRoc function to obtain results
-ezroc3(distance,labelsMain,2,'',1);
 
 
 function [roc,EER,area,EERthr,ALLthr,d,gen,imp]=ezroc3(H,T,plot_stat,headding,printInfo)%,rbst
