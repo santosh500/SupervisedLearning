@@ -1,0 +1,29 @@
+PCA = importdata('PCAscores.mat')
+LDA = importdata('LDAscores.mat')
+
+
+%Create the label matrix
+zeroMatrix = zeros(5);
+oneMatrix = ones(5);
+labelsMain = []
+labelCount = 1;
+generalMat = [];
+for i=1:40 
+    generalMat = [];
+    for j=1:40
+        if(labelCount==j)
+            generalMat = horzcat(generalMat,zeroMatrix);
+        else
+            generalMat = horzcat(generalMat,oneMatrix);
+        end
+    end
+    labelsMain = vertcat(labelsMain,generalMat);
+    labelCount = labelCount + 1;
+end
+
+
+for c = 1:200
+    for r = 1:200
+        o = min(PCA[c,r],LDA
+    end
+end
