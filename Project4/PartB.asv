@@ -1,86 +1,76 @@
 PCA = importdata('PCAscores.mat')
 LDA = importdata('LDAscores.mat')
 mainMin = []
-mainMax = []
-mainAvg = []
-
+mainMax = [];
+mainAvg = [];
+general = [];
+general5 = [];
 
 %Create the label matrix
 zeroMatrix = zeros(5);
 oneMatrix = ones(5);
-labelsMain = []
-labelCount = 1;
-generalMat = [];
-for i=1:40 
-    generalMat = [];
-    for j=1:40
-        if(labelCount==j)
-            generalMat = horzcat(generalMat,zeroMatrix);
-        else
-            generalMat = horzcat(generalMat,oneMatrix);
+total = 0;
+round1 = 1;
+round2 = 1;
+for i=1:200 
+    increment = 0;
+    for j=1:200
+        total = total + PCA(j,i);
+        increment = increment + 1;
+        if(increment==5)
+            general(round1,round2) = (total/5);
+            increment = 0;
+            round1 = round1+1;
+            total = 0;
         end
     end
-    labelsMain = vertcat(labelsMain,generalMat);
+    round1=1;
+    round2 = round2+1;
+end
+
+
+
+total = 0;
+round1 = 1;
+round2 = 1;
+for i=1:200 
+    increment = 0;
+    for j=1:200
+        total = total + LDA(j,i);
+        increment = increment + 1;
+        if(increment==5)
+            general5(round1,round2) = (total/5);
+            increment = 0;
+            round1 = round1+1;
+            total = 0;
+        end
+    end
+    round1=1;
+    round2 = round2+1;
+end
+
+
+
+generalMat2 = [];
+labelsMain = []
+labelCount = 1;
+regularZero = [0 0 0 0 0];
+regularOne = [1 1 1 1 1];
+for i=1:40 
+    generalMat2 = [];
+    for j=1:40
+        if(labelCount==j)
+            generalMat2 = horzcat(generalMat2,regularZero);
+        else
+            generalMat2 = horzcat(generalMat2,regularOne);
+        end
+    end
+    labelsMain = vertcat(labelsMain,generalMat2);
     labelCount = labelCount + 1;
 end
 
 
-for c = 1:200
-    for r = 1:200
-        mainMax(c,r)=max(PCA(c,r),LDA(c,r));
-    end
-end
-
-for c = 1:200
-    for r = 1:200
-        mainMin(c,r)=min(PCA(c,r),LDA(c,r));
-    end
-end
-
-for c = 1:200
-    for r = 1:200 
-        mainAvg(c,r)=((PCA(c,r)+LDA(c,r))/2);
-    end
-end
-
-
-
-%Utilize ezroc function to evaluate performance
-avgPlot =  ezroc3(mainAvg,labelsMain,2,'',1);
-minPlot =  ezroc3(mainMin,labelsMain,2,'',1);
-maxPlot =  ezroc3(mainMax,labelsMain,2,'',1);
-mat1 = []
-mat2 = []
-for c = 1:503
-    mat1(1,c)=avgPlot(1,c);
-    mat2(2,c)=avgPlot(2,c);
-end
-
-mat3 = []
-mat4 = []
-for c = 1:503
-    mat3(1,c)=minPlot(1,c);
-    mat4(2,c)=minPlot(2,c);
-end
-
-mat1 = []
-mat2 = []
-for c = 1:503
-    mat1(1,c)=avgPlot(1,c);
-    mat2(2,c)=avgPlot(2,c);
-end
-
-
-plot(mat2,mat1,'color','r')
-
-
-t = -pi : .1 : pi;
-x = sin(t);
-y = cos(t);
-plot(t,x,'color','r'); hold on;
-plot(t,y,'color','b');
-
-
+avgPlot =  ezroc3(general,labelsMain,2,'',1);
 function [roc,EER,area,EERthr,ALLthr,d,gen,imp]=ezroc3(H,T,plot_stat,headding,printInfo)%,rbst
 t1=min(min(min(H)));
 t2=max(max(max(H)));
