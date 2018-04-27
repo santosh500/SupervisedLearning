@@ -71,14 +71,14 @@ for c = 1:503
 end
 
 
-%plot(mat2,mat1,'color','r')
-%hold on
-%plot(mat4,mat3,'color','b')
-%hold on
-%plot(mat6,mat5,'color','g')
-%hold off
+plot(mat2,mat1)
+hold on
+plot(mat4,mat3)
+hold on
+plot(mat6,mat5)
+hold off
+legend('cos(x)','cos(2x)')
 
-legend('\color{red} Average','\color{blue} Minimum','\color{green} Max' )
 
 
 function [roc,EER,area,EERthr,ALLthr,d,gen,imp]=ezroc3(H,T,plot_stat,headding,printInfo)%,rbst
