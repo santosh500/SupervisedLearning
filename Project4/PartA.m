@@ -49,6 +49,8 @@ end
 avgPlot =  ezroc3(mainAvg,labelsMain,2,'',1);
 minPlot =  ezroc3(mainMin,labelsMain,2,'',1);
 maxPlot =  ezroc3(mainMax,labelsMain,2,'',1);
+LDAPlot =  ezroc3(LDA,labelsMain,2,'',1);
+PCAPlot =  ezroc3(PCA,labelsMain,2,'',1);
 mat1 = []
 mat2 = []
 for c = 1:503
@@ -70,15 +72,33 @@ for c = 1:503
     mat6(2,c)=maxPlot(2,c);
 end
 
+mat7 = []
+mat8 = []
+for c = 1:503
+    mat7(1,c)=LDAPlot(1,c);
+    mat8(2,c)=LDAPlot(2,c);
+end
 
-%plot(mat2,mat1,'color','r')
-%hold on
-%plot(mat4,mat3,'color','b')
-%hold on
-%plot(mat6,mat5,'color','g')
-%hold off
+mat9 = []
+mat10 = []
+for c = 1:503
+    mat9(1,c)=PCAPlot(1,c);
+    mat10(2,c)=PCAPlot(2,c);
+end
 
-legend('\color{red} Average','\color{blue} Minimum','\color{green} Max' )
+
+plot(mat2,mat1,'color','r')
+hold on
+plot(mat4,mat3,'color','b')
+hold on
+plot(mat6,mat5,'color','g')
+hold on
+plot(mat8,mat7,'color','y')
+hold on
+plot(mat10,mat9,'color','c')
+hold off
+
+legend('\color{red} Average','\color{blue} Minimum','\color{green} Max', '\color{yellow} LDA', '\color{cyan} PCA')
 
 
 function [roc,EER,area,EERthr,ALLthr,d,gen,imp]=ezroc3(H,T,plot_stat,headding,printInfo)%,rbst
