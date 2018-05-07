@@ -1,105 +1,131 @@
+%import PCA and LDA matrices
 PCA = importdata('PCAscores.mat')
 LDA = importdata('LDAscores.mat')
-mainMin = []
-mainMax = []
-mainAvg = []
+GeneralLabels = importdata('LabelsGeneral.mat')
+%initialize matrix for min,max, avg, and combined matrices
+mainMin = [];
+mainMax = [];
+mainAvg = [];
+PCACombine = [];
+LDACombine = [];
 
-
-%Create the label matrix
+%Create the PCA Multi-Instance matrix
 zeroMatrix = zeros(5);
 oneMatrix = ones(5);
-labelsMain = []
-labelCount = 1;
-generalMat = [];
-for i=1:40 
-    generalMat = [];
-    for j=1:40
-        if(labelCount==j)
-            generalMat = horzcat(generalMat,zeroMatrix);
-        else
-            generalMat = horzcat(generalMat,oneMatrix);
+total = 0;
+round1 = 1;
+round2 = 1;
+for i=1:200 
+    increment = 0;
+    for j=1:200
+        total = total + PCA(j,i);
+        increment = increment + 1;
+        if(increment==5)
+            PCACombine(round1,round2) = (total/5);
+            increment = 0;
+            round1 = round1+1;
+            total = 0;
         end
     end
-    labelsMain = vertcat(labelsMain,generalMat);
+    round1=1;
+    round2 = round2+1;
+end
+
+
+%Create the LDA Multi-Instance matrix
+total = 0;
+round1 = 1;
+round2 = 1;
+for i=1:200 
+    increment = 0;
+    for j=1:200
+        total = total + LDA(j,i);
+        increment = increment + 1;
+        if(increment==5)
+            LDACombine(round1,round2) = (total/5);
+            increment = 0;
+            round1 = round1+1;
+            total = 0;
+        end
+    end
+    round1=1;
+    round2 = round2+1;
+end
+
+
+%Create Labels
+labelsOfficial = [];
+labelsMain = []
+labelCount = 1;
+regularZero = [0 0 0 0 0];
+regularOne = [1 1 1 1 1];
+for i=1:40 
+    labelsOfficial = [];
+    for j=1:40
+        if(labelCount==j)
+            labelsOfficial = horzcat(labelsOfficial,regularZero);
+        else
+            labelsOfficial = horzcat(labelsOfficial,regularOne);
+        end
+    end
+    labelsMain = vertcat(labelsMain,labelsOfficial);
     labelCount = labelCount + 1;
 end
 
+%Utilize ezroc function to evaluate performance for PCA_MutiInstance,LDA_MultiInstance,LDA,PCA
+PCAMIPlot =  ezroc3(PCACombine,labelsMain,2,'',1);
+LDAMIPlot =  ezroc3(LDACombine,labelsMain,2,'',1);
+LDAPlot =  ezroc3(LDA,GeneralLabels,2,'',1);
+PCAPlot =  ezroc3(PCA,GeneralLabels,2,'',1);
 
-for c = 1:200
-    for r = 1:200
-        mainMax(c,r)=max(PCA(c,r),LDA(c,r));
-    end
-end
-
-for c = 1:200
-    for r = 1:200
-        mainMin(c,r)=min(PCA(c,r),LDA(c,r));
-    end
-end
-
-for c = 1:200
-    for r = 1:200 
-        mainAvg(c,r)=((PCA(c,r)+LDA(c,r))/2);
-    end
-end
-
-
-
-%Utilize ezroc function to evaluate performance
-avgPlot =  ezroc3(mainAvg,labelsMain,2,'',1);
-minPlot =  ezroc3(mainMin,labelsMain,2,'',1);
-maxPlot =  ezroc3(mainMax,labelsMain,2,'',1);
-LDAPlot =  ezroc3(LDA,labelsMain,2,'',1);
-PCAPlot =  ezroc3(PCA,labelsMain,2,'',1);
-mat1 = []
-mat2 = []
+%Obtain x and y for min
+PCAMIX = []
+PCAMIY = []
 for c = 1:503
-    mat1(1,c)=avgPlot(1,c);
-    mat2(2,c)=avgPlot(2,c);
+    PCAMIX(1,c)=PCAMIPlot(1,c);
+    PCAMIY(2,c)=PCAMIPlot(2,c);
 end
 
-mat3 = []
-mat4 = []
+%Obtain x and y for max
+LDAMIX = []
+LDAMIY = []
 for c = 1:503
-    mat3(1,c)=minPlot(1,c);
-    mat4(2,c)=minPlot(2,c);
+    LDAMIX(1,c)=LDAMIPlot(1,c);
+    LDAMIY(2,c)=LDAMIPlot(2,c);
 end
 
-mat5 = []
-mat6 = []
+%Obtain x and y for LDA plot
+ldaX = []
+ldaY = []
 for c = 1:503
-    mat5(1,c)=maxPlot(1,c);
-    mat6(2,c)=maxPlot(2,c);
+    ldaX(1,c)=LDAPlot(1,c);
+    ldaY(2,c)=LDAPlot(2,c);
 end
 
-mat7 = []
-mat8 = []
+%Obtain x and y for PCA plot
+PCAX = []
+PCAY = []
 for c = 1:503
-    mat7(1,c)=LDAPlot(1,c);
-    mat8(2,c)=LDAPlot(2,c);
+    PCAX(1,c)=PCAPlot(1,c);
+    PCAY(2,c)=PCAPlot(2,c);
 end
 
-mat9 = []
-mat10 = []
-for c = 1:503
-    mat9(1,c)=PCAPlot(1,c);
-    mat10(2,c)=PCAPlot(2,c);
-end
-
-
-plot(mat2,mat1,'color','r')
+plot(PCAMIY,PCAMIX,'color','r')
+title('Min')
 hold on
-plot(mat4,mat3,'color','b')
+plot(LDAMIY,LDAMIX,'color','b')
+title('Max')
 hold on
-plot(mat6,mat5,'color','g')
+plot(ldaY,ldaX,'color','g')
+title('LDA')
 hold on
-plot(mat8,mat7,'color','y')
-hold on
-plot(mat10,mat9,'color','c')
+plot(PCAY,PCAX,'color','y')
 hold off
 
-legend('\color{red} Average','\color{blue} Minimum','\color{green} Max', '\color{yellow} LDA', '\color{cyan} PCA')
-
+legend('\color{red} PCA Fusion','\color{blue} LDA Fusion','\color{green} LDA Single', '\color{yellow} PCA Single')
+title('MCS vs Single Classifier')
+xlabel('FAR')
+ylabel('GAR')
 
 function [roc,EER,area,EERthr,ALLthr,d,gen,imp]=ezroc3(H,T,plot_stat,headding,printInfo)%,rbst
 t1=min(min(min(H)));

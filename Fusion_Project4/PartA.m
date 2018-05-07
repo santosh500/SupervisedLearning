@@ -1,5 +1,7 @@
+%import PCA and LDA matrices
 PCA = importdata('PCAscores.mat')
 LDA = importdata('LDAscores.mat')
+%initialize matrix for min,max, avg
 mainMin = []
 mainMax = []
 mainAvg = []
@@ -24,19 +26,21 @@ for i=1:40
     labelCount = labelCount + 1;
 end
 
-
+%Create max matrix
 for c = 1:200
     for r = 1:200
         mainMax(c,r)=max(PCA(c,r),LDA(c,r));
     end
 end
 
+%Create min matrix
 for c = 1:200
     for r = 1:200
         mainMin(c,r)=min(PCA(c,r),LDA(c,r));
     end
 end
 
+%Create avg matrix
 for c = 1:200
     for r = 1:200 
         mainAvg(c,r)=((PCA(c,r)+LDA(c,r))/2);
@@ -45,41 +49,73 @@ end
 
 
 
-%Utilize ezroc function to evaluate performance
+%Utilize ezroc function to evaluate performance for min,max,avg,LDA,PCA
 avgPlot =  ezroc3(mainAvg,labelsMain,2,'',1);
 minPlot =  ezroc3(mainMin,labelsMain,2,'',1);
 maxPlot =  ezroc3(mainMax,labelsMain,2,'',1);
-mat1 = []
-mat2 = []
+LDAPlot =  ezroc3(LDA,labelsMain,2,'',1);
+PCAPlot =  ezroc3(PCA,labelsMain,2,'',1);
+
+%Obtain x and y for avg
+avgX = []
+avgY = []
 for c = 1:503
-    mat1(1,c)=avgPlot(1,c);
-    mat2(2,c)=avgPlot(2,c);
+    avgX(1,c)=avgPlot(1,c);
+    avgY(2,c)=avgPlot(2,c);
 end
 
-mat3 = []
-mat4 = []
+%Obtain x and y for min
+minX = []
+minY = []
 for c = 1:503
-    mat3(1,c)=minPlot(1,c);
-    mat4(2,c)=minPlot(2,c);
+    minX(1,c)=minPlot(1,c);
+    minY(2,c)=minPlot(2,c);
 end
 
-mat5 = []
-mat6 = []
+%Obtain x and y for max
+maxX = []
+maxY = []
 for c = 1:503
-    mat5(1,c)=maxPlot(1,c);
-    mat6(2,c)=maxPlot(2,c);
+    maxX(1,c)=maxPlot(1,c);
+    maxY(2,c)=maxPlot(2,c);
+end
+
+%Obtain x and y for LDA plot
+ldaX = []
+ldaY = []
+for c = 1:503
+    ldaX(1,c)=LDAPlot(1,c);
+    ldaY(2,c)=LDAPlot(2,c);
+end
+
+%Obtain x and y for PCA plot
+PCAX = []
+PCAY = []
+for c = 1:503
+    PCAX(1,c)=PCAPlot(1,c);
+    PCAY(2,c)=PCAPlot(2,c);
 end
 
 
-plot(mat2,mat1)
+plot(avgY,avgX,'color','r')
+title('Avg')
 hold on
-plot(mat4,mat3)
+plot(minY,minX,'color','b')
+title('Min')
 hold on
-plot(mat6,mat5)
+plot(maxY,maxX,'color','g')
+title('Max')
+hold on
+plot(ldaY,ldaX,'color','y')
+title('LDA')
+hold on
+plot(PCAY,PCAX,'color','c')
 hold off
-legend('cos(x)','cos(2x)')
 
-
+legend('\color{red} Average','\color{blue} Minimum','\color{green} Max', '\color{yellow} LDA', '\color{cyan} PCA')
+title('MCS vs Single Classifier')
+xlabel('FAR')
+ylabel('GAR')
 
 function [roc,EER,area,EERthr,ALLthr,d,gen,imp]=ezroc3(H,T,plot_stat,headding,printInfo)%,rbst
 t1=min(min(min(H)));
