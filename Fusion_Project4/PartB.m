@@ -2,10 +2,7 @@
 PCA = importdata('PCAscores.mat')
 LDA = importdata('LDAscores.mat')
 GeneralLabels = importdata('LabelsGeneral.mat')
-%initialize matrix for min,max, avg, and combined matrices
-mainMin = [];
-mainMax = [];
-mainAvg = [];
+%initialize matrix for combined matrices
 PCACombine = [];
 LDACombine = [];
 
