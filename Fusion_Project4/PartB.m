@@ -110,6 +110,7 @@ for c = 1:503
     PCAY(2,c)=PCAPlot(2,c);
 end
 
+%Create fusion plot
 plot(PCAMIY,PCAMIX,'color','r')
 title('Min')
 hold on
@@ -123,7 +124,7 @@ plot(PCAY,PCAX,'color','y')
 hold off
 
 legend('\color{red} PCA Fusion','\color{blue} LDA Fusion','\color{green} LDA Single', '\color{yellow} PCA Single')
-title('MCS vs Single Classifier')
+title('Multi-Instance vs Single Classifier')
 xlabel('FAR')
 ylabel('GAR')
 

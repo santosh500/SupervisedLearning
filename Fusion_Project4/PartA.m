@@ -96,7 +96,7 @@ for c = 1:503
     PCAY(2,c)=PCAPlot(2,c);
 end
 
-
+%Create fusion plot
 plot(avgY,avgX,'color','r')
 title('Avg')
 hold on
