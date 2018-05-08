@@ -97,22 +97,23 @@ for c = 1:503
 end
 
 %Create fusion plot
-plot(avgY,avgX,'color','r')
+plot(ldaY,ldaX,'color','y')
+title('LDA')
+hold on
+plot(avgY,avgX,'color','b')
 title('Avg')
 hold on
-plot(minY,minX,'color','b')
+plot(minY,minX,'color','r')
 title('Min')
 hold on
 plot(maxY,maxX,'color','g')
 title('Max')
 hold on
-plot(ldaY,ldaX,'color','y')
-title('LDA')
-hold on
+
 plot(PCAY,PCAX,'color','c')
 hold off
 
-legend('\color{red} Average','\color{blue} Minimum','\color{green} Max', '\color{yellow} LDA', '\color{cyan} PCA')
+legend('\color{yellow} LDA','\color{blue} Average','\color{red} Minimum','\color{green} Max', '\color{cyan} PCA')
 title('MCS vs Single Classifier')
 xlabel('FAR')
 ylabel('GAR')
