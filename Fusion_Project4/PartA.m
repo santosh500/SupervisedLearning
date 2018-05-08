@@ -96,7 +96,7 @@ for c = 1:503
     PCAY(2,c)=PCAPlot(2,c);
 end
 
-%Create fusion plot
+%Create comparison plot
 plot(ldaY,ldaX,'color','y')
 title('LDA')
 hold on
@@ -109,10 +109,10 @@ hold on
 plot(maxY,maxX,'color','g')
 title('Max')
 hold on
-
 plot(PCAY,PCAX,'color','c')
 hold off
 
+%Add legend and features to plot
 legend('\color{yellow} LDA','\color{blue} Average','\color{red} Minimum','\color{green} Max', '\color{cyan} PCA')
 title('MCS vs Single Classifier')
 xlabel('FAR')
